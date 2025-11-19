@@ -96,8 +96,9 @@ Each normalised variable lies in the interval `[0, 1]`, ensuring that no single 
 
 The final importance score is computed as a weighted linear combination:
 
+```
 w_i = 0.4 * v_i_norm + 0.3 * e_i_norm + 0.3 * s_i_norm
-
+```
 ### Why this weighting makes sense
 
 The coefficients reflect the joint priorities of a cold–chain service network:
@@ -131,9 +132,9 @@ The procedure implemented in `notebooks/03_weighted_hub_optimization.ipynb`
 consists of:
 
 1. Filtering customers with `DSREG == "NORTE"`.
-2. Computing the importance weight \w_i\ for each customer.
+2. Computing the importance weight `w_i` for each customer.
 3. Applying a **weighted clustering algorithm** on the geographic coordinates
-   (`LATTUD`, `LNGTUD`) with `k = 2`, using \w_i\ as sample weights.
+   (`LATTUD`, `LNGTUD`) with `k = 2`, using `w_i` as sample weights.
    K–Means from `scikit-learn` is used with fixed random seeds for
    reproducibility.
 4. Interpreting the resulting cluster centres as **candidate hub locations**:
@@ -169,7 +170,7 @@ environment defined in `src/foraging_env.py` to simulate agents that:
 The implementation compares policies such as:
 
 - a distance–based heuristic that always visits the nearest unserved customer,
-- a weight–based heuristic that prioritises sites with higher \w_i\,
+- a weight–based heuristic that prioritises sites with higher `w_i`,
 - an exploratory policy that balances distance and weight through a simple
   learning rule over repeated visits.
 
