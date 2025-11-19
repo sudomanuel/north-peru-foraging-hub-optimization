@@ -74,66 +74,50 @@ documents the anonymisation and sampling procedure in detail.
 
 ## 2. Customer importance and weighting scheme
 
-Each customer is interpreted as a **patch** in a spatial landscape of demand
-and maintenance effort. The study assigns an importance weight \(w_i\) to
-customer \(i\) using three drivers:
+Each customer is treated as a **patch** within a spatial landscape of demand and operational effort.  
+To quantify its relevance, the study assigns an **importance score** `w_i` based on three dimensions:
 
-- economic contribution (average sales),
-- asset base (number of units to maintain),
-- operational load (service history).
+- **Economic contribution** (average sales)
+- **Asset base** (number of units installed at the site)
+- **Operational load** (historical service activity)
 
-To make these components comparable, the raw variables are first **normalised**
-within each region:
+### Normalisation
 
-\[
-\tilde{v}_i = \text{norm}(\text{VVENTASPROM}_i), \quad
-\tilde{e}_i = \text{norm}(\text{CANTIDADEQ}_i), \quad
-\tilde{s}_i = \text{norm}(\text{Cantidad\_total\_serv}_i),
-\]
+Since these variables differ in scale and distribution, each one is **normalised within its region** using a trimmed min–max transformation.  
+This produces three comparable values:
 
-where `norm(·)` denotes a min–max rescaling that maps values to the interval
-[0, 1] after trimming extreme tails. This step ensures that no component
-dominates the weight purely due to units or raw magnitude.
+- `v_i_norm` — normalised average sales  
+- `e_i_norm` — normalised equipment count  
+- `s_i_norm` — normalised total services  
 
-The final weight is defined as:
+Each normalised variable lies in the interval `[0, 1]`, ensuring that no single component dominates merely due to units or magnitude.
 
-\[
-w_i = \alpha_v \tilde{v}_i +
-      \alpha_e \tilde{e}_i +
-      \alpha_s \tilde{s}_i,
-\]
+### Final weighting formula
 
-with coefficients:
+The final importance score is computed as a weighted linear combination:
 
-- \(\alpha_v = 0.4\)  for sales,
-- \(\alpha_e = 0.3\)  for installed units,
-- \(\alpha_s = 0.3\)  for service activity.
+w_i = 0.4 * v_i_norm + 0.3 * e_i_norm + 0.3 * s_i_norm
 
 ### Why this weighting makes sense
 
-The coefficients are chosen to reflect the joint priorities of a cold–chain
-operation:
+The coefficients reflect the joint priorities of a cold–chain service network:
 
-- Sales are given a slight advantage because they capture direct commercial
-  impact and the potential benefit of protecting and developing a site.
-- The number of units at a site concentrates asset risk: failures at a
-  multi–unit site can affect a large volume of product and brand visibility.
-- Service activity reflects actual field workload and the operational cost
-  of keeping the site running.
+- **Sales (0.4)** receive slightly more weight because they capture commercial relevance and the potential benefit of protecting a site with higher throughput.
+- **Installed units (0.3)** represent asset concentration. Sites with multiple units carry higher operational risk and greater impact in case of failure.
+- **Service activity (0.3)** captures historical operational demand and the real workload required to maintain the site.
 
-A correlation analysis on the underlying system showed that these three
-dimensions tend to move together at high–value locations. Using only one
-indicator would miss important aspects of the network. The triplet
-\((0.4, 0.3, 0.3)\) gives more influence to sales while keeping equipment
-base and service history at comparable levels.
+These three dimensions tend to align at the most relevant locations.  
+Using only one of them (e.g., only sales or only service history) would underestimate important aspects of the network.
 
-Several alternative triplets were tested. The ranking of high–weight customers
-and the resulting hub locations remained stable under moderate changes of the
-coefficients (perturbations up to ±0.1 in each weight). This robustness
-suggests that the final choice is representative of a broader family of
-reasonable trade–offs rather than a fragile tuning.
+A sensitivity analysis confirmed that the choice `(0.4, 0.3, 0.3)` is **robust**.  
+Modifying each coefficient by ±0.1 did not significantly change:
 
-The complete computation and exploratory plots of the weights are contained in  
+- the ranking of high–importance customers, nor  
+- the location of the optimised hubs.  
+
+This indicates that the solution is stable and not dependent on fine–tuned parameters.
+
+Detailed computations and visualisations of the weighting process can be found in:  
 `notebooks/02_exploration_and_weights.ipynb`.
 
 ---
@@ -147,9 +131,9 @@ The procedure implemented in `notebooks/03_weighted_hub_optimization.ipynb`
 consists of:
 
 1. Filtering customers with `DSREG == "NORTE"`.
-2. Computing the importance weight \(w_i\) for each customer.
+2. Computing the importance weight \w_i\ for each customer.
 3. Applying a **weighted clustering algorithm** on the geographic coordinates
-   (`LATTUD`, `LNGTUD`) with `k = 2`, using \(w_i\) as sample weights.
+   (`LATTUD`, `LNGTUD`) with `k = 2`, using \w_i\ as sample weights.
    K–Means from `scikit-learn` is used with fixed random seeds for
    reproducibility.
 4. Interpreting the resulting cluster centres as **candidate hub locations**:
@@ -185,7 +169,7 @@ environment defined in `src/foraging_env.py` to simulate agents that:
 The implementation compares policies such as:
 
 - a distance–based heuristic that always visits the nearest unserved customer,
-- a weight–based heuristic that prioritises sites with higher \(w_i\),
+- a weight–based heuristic that prioritises sites with higher \w_i\,
 - an exploratory policy that balances distance and weight through a simple
   learning rule over repeated visits.
 
