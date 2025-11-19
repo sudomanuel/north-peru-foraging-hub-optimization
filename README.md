@@ -222,35 +222,37 @@ north-peru-foraging-hub-optimization/
     ├─ geo_utils.py
     └─ foraging_env.py
 ```
-01_generate_synthetic_data.ipynb
-Documents the construction of the anonymised dataset from regional
-aggregates and fitted distributions.
 
-02_exploration_and_weights.ipynb
-Performs exploratory analysis and computes customer importance weights.
+Each notebook has a clear purpose:
 
-03_weighted_hub_optimization.ipynb
-Executes the weighted clustering procedure and evaluates the two selected hubs.
+- **01_generate_synthetic_data.ipynb**  
+  Builds the anonymised dataset from regional envelopes and fitted distributions.
 
-04_foraging_policies_simulation.ipynb
-Simulates decision policies on top of the optimised hub–customer landscape.
+- **02_exploration_and_weights.ipynb**  
+  Performs exploratory analysis and computes customer importance weights.
 
+- **03_weighted_hub_optimization.ipynb**  
+  Runs the weighted clustering algorithm and evaluates the selected hub locations.
 
-### 6. Requirements
+- **04_foraging_policies_simulation.ipynb**  
+  Simulates decision policies operating on the optimised hub–customer landscape.
 
-Main dependencies:
+---
 
-Python 3.10+
+## 6. Requirements
 
-pandas
+The project uses standard Python tools.  
+Install the following packages to reproduce the notebooks:
 
-numpy
+- Python 3.10+
+- pandas  
+- numpy  
+- scikit-learn  
+- matplotlib  
+- jupyter or jupyterlab  
 
-scikit-learn
+After installing the dependencies, the full workflow can be reproduced by
+running the notebooks in numerical order.
 
-matplotlib
+---
 
-jupyter or jupyterlab
-
-The repository is self–contained and can be reproduced by installing the
-listed packages and running the notebooks in numerical order.
