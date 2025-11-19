@@ -37,15 +37,23 @@ while ensuring that individual customers and exact locations cannot be recovered
 
 Each row represents a customer with the following key fields:
 
+Each row represents a customer with the following key fields:
+
 - `DSREG` – Region label (`NORTE`, `SUR`, `CENTRO`, `LIMA`)
 - `CDCLIE` – Anonymised customer ID
 - `NROPUESUM` – Total number of doors across all fridges at the location
 - `VVENTASPROM` – Average sales volume (cases per period)
 - `LATTUD`, `LNGTUD` – Latitude and longitude (randomised within regional envelopes)
 - `CANTIDADEQ` – Number of refrigeration units installed
-- `Cantserviciosdistri` – Number of distribution (truck) services
-- `CantserviciosST` – Number of technical services
-- `Cantidad_total_serv` – Total services (`Cantserviciosdistri + CantserviciosST`)
+- `EDADDIAS` – Average age of the installed units at the site (in days)
+- `Cantserviciosdistri` – Number of distribution (truck) services historically performed at the customer
+- `CantserviciosST` – Number of technical service interventions
+- `Cantidad total serv` – Total number of services  
+  (`Cantserviciosdistri + CantserviciosST`)
+- `TIEMPO DE EJECUCION PROMEDIO (MINUTOS)` – Average execution time of service visits
+- `TIEMPO PROMEDIO DE LLAMADOS (DIAS)` – Average time between customer call and service execution
+- `DEPARTAMENTO` – Administrative department where the customer is located
+
 
 The generation process follows three principles:
 
@@ -86,9 +94,10 @@ To quantify its relevance, the study assigns an **importance score** `w_i` based
 Since these variables differ in scale and distribution, each one is **normalised within its region** using a trimmed min–max transformation.  
 This produces three comparable values:
 
-- `v_i_norm` — normalised average sales  
-- `e_i_norm` — normalised equipment count  
-- `s_i_norm` — normalised total services  
+- `v_i_norm` — normalised average sales, derived from `VVENTASPROM`
+- `e_i_norm` — normalised equipment count, derived from `CANTIDADEQ`
+- `s_i_norm` — normalised service activity, derived from `Cantidad total serv`  
+  (which itself aggregates `Cantserviciosdistri` and `CantserviciosST`)
 
 Each normalised variable lies in the interval `[0, 1]`, ensuring that no single component dominates merely due to units or magnitude.
 
